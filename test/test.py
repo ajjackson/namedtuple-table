@@ -15,9 +15,9 @@ class CatRow(NamedTuple):
 @pytest.fixture
 def cat_rows() -> list[CatRow]:
     return [
-        CatRow("Freddy", 25, 3, True),
-        CatRow("Bucket", 2, 5, True),
-        CatRow("Enoby", 27, 8, True),
+        CatRow("Freddy", 25, 3, floof=True),
+        CatRow("Bucket", 2, 5, floof=True),
+        CatRow("Enoby", 27, 8, floof=True),
     ]
 
 

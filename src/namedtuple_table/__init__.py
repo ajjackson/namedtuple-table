@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from functools import cache, cached_property
+from functools import cached_property, lru_cache
 from itertools import tee
 from types import MappingProxyType
 from typing import Iterable, NamedTuple, TypeVar
@@ -18,7 +18,8 @@ class NamedTupleTable(Mapping[str | int, NT]):
             rows, rows_tee = tee(rows)
 
             # Use the first field in the first item
-            index = next(iter(next(rows_tee)._as_dict()))
+            # (Believe it or not, _as_dict is documented public API)
+            index = next(iter(next(rows_tee)._as_dict()))  # noqa: SLF001
 
         self._rows = frozenset(rows)
         self._index = index
@@ -39,16 +40,29 @@ class NamedTupleTable(Mapping[str | int, NT]):
     def __iter__(self) -> NT:
         return iter(self._rows)
 
-    @cache
-    def __len__(self) -> int:
+    @cached_property
+    def _len(self) -> int:
         return len(self._rows)
+
+    def __len__(self) -> int:
+        return self._len
 
     def items(self) -> Iterable[tuple[str | int, NT]]:
         return self._map.items()
 
-    @cache
     def with_index(self, index: str | None) -> NamedTupleTable:
-        new_table = type(self)(self, index=index)
-        if len(new_table) != len(self):
-            raise ValueError(f"Cannot use '{index}' as index: not unique for all items")
-        return new_table
+        return _create_with_new_index(type(self), self._rows, index)
+
+
+NTT = TypeVar("NTT", bound=NamedTupleTable)
+
+
+@lru_cache(maxsize=5)
+def _create_with_new_index(
+    cls: type[NTT], rows: frozenset[NamedTuple], index: str | int
+) -> NTT:
+    new_table = cls(rows, index=index)
+    if len(new_table) != len(rows):
+        msg = f"Cannot use '{index}' as index: not unique for all items"
+        raise ValueError(msg)
+    return new_table

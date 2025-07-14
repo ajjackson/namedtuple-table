@@ -24,3 +24,59 @@ addopts = [
 testpaths = [
     "test/test*.py",
 ]
+
+[tool.ruff]
+target-version = "py312"
+namespace-packages = ["test"]
+
+[tool.ruff.lint]
+select = [
+       "ERA001",  # Eradicate commented-out code
+       "YTT",     # Flake8-2020
+       "S",       # Security (flake8-bandit)
+       "BLE",     # flake8-blind-except
+       "FBT",     # flake8-boolean-trap
+       "B",       # flake8-bugbear
+       "A",       # flake8-builtins
+       "COM",     # flake8-commas
+       "C4",      # flake8-comprehensions
+       "T10",     # flake8-debugger
+       "EM",      # flake8-errmsg
+       "EXE",     # flake8-executable
+       "FIX",     # flake8-fixme (leftover FIXME, TODO etc.)
+       "FA",      # flake8-future-annotations
+       "INT",     # flake8-gettext
+       "ISC",     # flake8-implicit-str-concat
+       "ICN",     # flake8-import-conventions
+       "LOG",     # flake8-logging
+       "G",       # flake8-logging-format
+       "INP",     # flake8-no-pep420
+       "PIE",     # flake8-pie
+       "PYI",     # flake8-pyi
+       "PT",      # flake8-pytest-style
+       "Q",       # flake8-quotes
+       "RSE",     # flake8-raise
+       "RET",     # flake8-return
+       "SLF",     # flake8-self
+       "SIM",   # flake8-simplify : good stuff, worth its own PR
+       "SLOT",    # flake8-slots
+       "TID",     # flake8-tidy-imports
+       "TD",      # flake8-todos
+       "TC",      # flake8-type-checking
+       "ARG",     # flake8-unused-arguments
+       "PTH",     # flake8-use-pathlib : would love to but maybe easier with API breaks
+       "FLY",     # flynt
+       "I",       # isort
+       "C90",     # mccabe : code complexity check. Worth a look but non-trivial
+       "N",       # pep8-naming
+       "PERF",    # Perflint
+       "F401",    # unused-import
+       "E",
+       "W",
+       "F",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"test/*" = [
+         "S101",  # pytest expects "assert" to be used
+]
