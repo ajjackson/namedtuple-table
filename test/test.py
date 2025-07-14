@@ -32,6 +32,9 @@ def test_methods(cat_rows):
     assert "Heathcliff" not in cat_table
 
     for item in cat_table:
+        assert isinstance(item, str)
+
+    for item in cat_table.values():
         assert isinstance(item, CatRow)
 
     freddy = cat_table["Freddy"]

@@ -17,6 +17,9 @@ lint = [
      "ruff",
 ]
 
+[tool.mypy]
+python_version = "3.12"
+
 [tool.pytest.ini_options]
 addopts = [
     "--import-mode=importlib",
@@ -33,6 +36,7 @@ namespace-packages = ["test"]
 select = [
        "ERA001",  # Eradicate commented-out code
        "YTT",     # Flake8-2020
+       "ANN",     # Annotations
        "S",       # Security (flake8-bandit)
        "BLE",     # flake8-blind-except
        "FBT",     # flake8-boolean-trap
@@ -83,4 +87,5 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "test/*" = [
          "S101",  # pytest expects "assert" to be used
+         "ANN",   # life to short to annotate pytests
 ]
