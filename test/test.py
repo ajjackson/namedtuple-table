@@ -4,11 +4,13 @@ import pytest
 
 from namedtuple_table import NamedTupleTable
 
+
 class CatRow(NamedTuple):
     name: str
     ref: int
     age: int
     floof: bool
+
 
 @pytest.fixture
 def cat_rows() -> list[CatRow]:
@@ -17,6 +19,7 @@ def cat_rows() -> list[CatRow]:
         CatRow("Bucket", 2, 5, True),
         CatRow("Enoby", 27, 8, True),
     ]
+
 
 def test_methods(cat_rows):
     cat_table = NamedTupleTable(cat_rows, index="name")
@@ -35,7 +38,8 @@ def test_methods(cat_rows):
     assert isinstance(freddy, CatRow)
     assert freddy.age == 3
 
-def test_index_change(cat_rows):    
+
+def test_index_change(cat_rows):
     cat_table = NamedTupleTable(cat_rows, index="name")
 
     cats_by_ref = cat_table.with_index("ref")

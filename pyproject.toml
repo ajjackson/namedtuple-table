@@ -11,4 +11,16 @@ requires-python = ">=3.12"
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest", "mypy"]
+test = ["pytest"]
+lint = [
+     "mypy",
+     "ruff",
+]
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
+testpaths = [
+    "test/test*.py",
+]

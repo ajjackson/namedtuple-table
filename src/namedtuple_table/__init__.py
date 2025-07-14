@@ -8,7 +8,8 @@ from typing import Iterable, NamedTuple, TypeVar
 
 NT = TypeVar("NT", bound=NamedTuple)
 
-class NamedTupleTable(Mapping[str|int, NT]):
+
+class NamedTupleTable(Mapping[str | int, NT]):
     """An immutable collection of NamedTuple using one attribute as an index"""
 
     def __init__(self, rows: Iterable[NT], index: str | None = None) -> None:
@@ -27,8 +28,7 @@ class NamedTupleTable(Mapping[str|int, NT]):
 
     @cached_property
     def _map(self) -> MappingProxyType:
-        return MappingProxyType(
-            {getattr(row, self._index): row for row in self._rows})
+        return MappingProxyType({getattr(row, self._index): row for row in self._rows})
 
     def __getitem__(self, key) -> NT:
         return self._map[key]
@@ -50,6 +50,5 @@ class NamedTupleTable(Mapping[str|int, NT]):
     def with_index(self, index: str | None) -> NamedTupleTable:
         new_table = type(self)(self, index=index)
         if len(new_table) != len(self):
-            raise ValueError(
-                f"Cannot use '{index}' as index: not unique for all items")
+            raise ValueError(f"Cannot use '{index}' as index: not unique for all items")
         return new_table
