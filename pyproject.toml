@@ -76,6 +76,10 @@ select = [
        "F",
 ]
 
+ignore = [
+       "COM812",
+]
+
 [tool.ruff.lint.per-file-ignores]
 "test/*" = [
          "S101",  # pytest expects "assert" to be used
