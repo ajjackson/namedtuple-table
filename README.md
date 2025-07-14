@@ -21,6 +21,11 @@
   should be straightforward to do this stuff with Python's
   functional programming features.
 
+- The underlying key-value map is itself constructed lazily, so if you
+  treat the object as an iterable over NamedTuple you can do some
+  filtering etc. and return a new table without ever building the
+  (unused) index.
+
 ### Drawbacks
 
 - This is not designed to scale; in the intended use-case the table

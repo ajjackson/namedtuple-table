@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from functools import cache
+from functools import cache, cached_property
 from itertools import tee
 from types import MappingProxyType
 from typing import Iterable, NamedTuple, TypeVar
@@ -19,24 +19,32 @@ class NamedTupleTable(Mapping[str|int, NT]):
             # Use the first field in the first item
             index = next(iter(next(rows_tee)._as_dict()))
 
-        self._rows = MappingProxyType(
-            {getattr(row, index): row for row in rows})
+        self._rows = frozenset(rows)
         self._index = index
 
+    def __str__(self) -> str:
+        print(f"NamedTupleTable ({len(self)} items, index = {self._index})")
+
+    @cached_property
+    def _map(self) -> MappingProxyType:
+        return MappingProxyType(
+            {getattr(row, self._index): row for row in self._rows})
+
     def __getitem__(self, key) -> NT:
-        return self._rows[key]
+        return self._map[key]
 
     def __hash__(self) -> int:
-        return hash((self._index, frozenset(self._rows.values())))
+        return hash((self._index, self._rows))
 
     def __iter__(self) -> NT:
-        return iter(self._rows.values())
+        return iter(self._rows)
 
+    @cache
     def __len__(self) -> int:
         return len(self._rows)
 
     def items(self) -> Iterable[tuple[str | int, NT]]:
-        return self._rows.items()
+        return self._map.items()
 
     @cache
     def with_index(self, index: str | None) -> NamedTupleTable:
