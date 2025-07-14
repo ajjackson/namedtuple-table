@@ -16,10 +16,14 @@
   `.index_by("new_index")`. Values of the new index must be unique in
   every row.
 
+- Tables are immutable and hashable, so should play nicely with
+  caching, filters etc.  We could add a "select" method etc. but it
+  should be straightforward to do this stuff with Python's
+  functional programming features.
+
 ### Drawbacks
 
-- This is not designed for performance. In the intended use-case the
-  table size is modest and you are doing somewhat expensive things
-  with the data. If you need performance/scale, consider Pandas or a
-  database interface like
-  [dataset](https://pypi.org/project/dataset/).
+- This is not designed to scale; in the intended use-case the table
+  size is modest and you are doing somewhat expensive things with the
+  data. If you need performance/scale, consider Pandas or a database
+  interface like [dataset](https://pypi.org/project/dataset/).
