@@ -1,0 +1,47 @@
+name: run-tests
+on:
+  push:
+    branches:
+      - '**main**'
+      - '**release**'
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: 3.12
+
+      - name: Install packages
+        run: uv sync --extra lint
+
+      - name: ruff check
+        run: uv run ruff check
+
+      - name: ruff format
+        run: uv run ruff format --diff
+
+      - name: mypy
+        run: uv run mypy src test
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: 3.12
+
+      - name: Install packages
+        run: uv sync --extra test
+
+      - name: pytest
+        run: uv run pytest
