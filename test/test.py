@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import NamedTuple
 
 import pytest
@@ -19,6 +20,11 @@ def cat_rows() -> list[CatRow]:
         CatRow("Bucket", 2, 5, floof=True),
         CatRow("Enoby", 27, 8, floof=True),
     ]
+
+
+@pytest.fixture
+def dogs_tsv() -> Path:
+    return Path(__file__).parent / "data/dogs.tsv"
 
 
 def test_methods(cat_rows):
@@ -49,3 +55,20 @@ def test_index_change(cat_rows):
     assert cats_by_ref[27].name == "Enoby"
 
     assert cats_by_ref is cat_table.with_index("ref")
+
+    with pytest.raises(ValueError, match="Cannot use 'floof' as index: "):
+        cat_table.with_index("floof")
+
+
+def test_from_tsv(dogs_tsv):
+    dog_table = NamedTupleTable.from_tsv(dogs_tsv)
+
+    # Test columns are named correctly
+    assert dog_table["2"].name == "Geoff"
+
+    # Test double-tabs are joined correctly
+    assert dog_table["2"].collar == "blue"
+
+    # Test duplicate values are detected when re-indexing
+    with pytest.raises(ValueError, match="Cannot use 'collar' as index: "):
+        dog_table.with_index("collar")

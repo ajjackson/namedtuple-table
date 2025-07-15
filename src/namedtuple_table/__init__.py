@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+from collections import namedtuple
 from collections.abc import Mapping
 from functools import cached_property, lru_cache
 from itertools import tee
+from pathlib import PurePath
+from re import split as re_split
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Iterable, Iterator, NamedTuple, TypeVar
+from typing import TYPE_CHECKING, Iterable, Iterator, NamedTuple, Self, TypeVar
 
 NT = TypeVar("NT", bound=NamedTuple)
 
@@ -44,7 +47,7 @@ class NamedTupleTable(Mapping[str | int, NT]):
 
     @cached_property
     def _len(self) -> int:
-        return len(self._rows)
+        return len(self._map)
 
     def __len__(self) -> int:
         return self._len
@@ -52,6 +55,40 @@ class NamedTupleTable(Mapping[str | int, NT]):
     def with_index(self, index: str | None) -> NamedTupleTable:
         return _create_with_new_index(type(self), self._rows, index)
 
+    @classmethod
+    def from_tsv(cls, path: PurePath, index: str | None = None) -> Self:
+        """Get a NamedTupleTable from Path to .tsv file
+
+        The first row of the tab-separated-variables (TSV) file will be
+        interpreted as column headers, e.g.::
+
+          name⇥number⇥cake
+          Winnifred⇥1⇥carrot
+          Dom⇥⇥2⇥berry
+
+        Where ⇥ represents a TAB whitespace character. Note that multiple TAB
+        can be used for visual alignment purposes; they will be merged when
+        determining columns. Fields may not be left empty.
+
+        Args:
+            path: .tsv file to import
+            index: Column name used to access table items
+
+        """
+        with path.open() as fd:
+            header = fd.readline()
+            content = fd.readlines()
+
+        field_names = re_split(r"\t+", header.strip())
+
+        TableRow = namedtuple("TableRow", field_names=field_names)
+
+        table_rows = set()
+        for line in content:
+            row = TableRow(*re_split(r"\t+", line.strip()))
+            table_rows = table_rows | {row}
+
+        return cls(table_rows, index=index)
 
 NTT = TypeVar("NTT", bound=NamedTupleTable)
 
