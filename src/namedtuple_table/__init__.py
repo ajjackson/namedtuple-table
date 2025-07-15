@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 from collections import namedtuple
-from collections.abc import Mapping
+from collections.abc import Iterable, Iterator, Mapping
 from functools import cached_property, lru_cache
 from itertools import tee
 from re import split as re_split
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Iterable, Iterator, NamedTuple, TypeVar
+from typing import TYPE_CHECKING, NamedTuple, TypeVar
 
 if TYPE_CHECKING:
     from io import TextIOBase

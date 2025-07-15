@@ -33,6 +33,8 @@ target-version = "py312"
 namespace-packages = ["test"]
 
 [tool.ruff.lint]
+preview = true
+explicit-preview-rules = true
 select = [
        "ERA001",  # Eradicate commented-out code
        "YTT",     # Flake8-2020
@@ -77,9 +79,14 @@ select = [
        "F401",    # unused-import
        "E",       # pycodestyle error
        "W",       # pycodestyle warning
-       "F",       # pyflakes
        "DOC",     # pydoclint
        "D",       # pydocstyle
+       "F",       # pyflakes
+       "PL",      # pylint
+       "UP",      # pyupgrade
+       "FURB",    # refurb
+       "RUF",     # ruff
+       "TRY",     # tryceratops
 ]
 
 ignore = [
@@ -89,10 +96,12 @@ ignore = [
        "D203",  # Line before class docstring (inconsistent with D211)
        "D213",  # D212 and D213 are incompatible
        "D415",  # ""
+       "UP047", # Generic function annotation. Don't understand how to make it work with mypy
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "test/*" = [
-         "S101",  # pytest expects "assert" to be used
-         "ANN",   # life to short to annotate pytests
+         "S101",    # pytest expects "assert" to be used
+         "ANN",     # life to short to annotate pytests
+         "PLR2004", # magic values ok in unit tests
 ]
