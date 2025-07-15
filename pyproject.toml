@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "namedtuple_table"
-version = "0.1.0"
+version = "0.1.0.post1"
 authors = [
     {name = "Adam Jackson", email = "adam.jackson@stfc.ac.uk"},
 ]
