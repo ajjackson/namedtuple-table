@@ -126,8 +126,10 @@ class NamedTupleTable(Mapping[str | int, NT]):
             try:
                 row = TableRow(*re_split(r"\t+", line))
             except TypeError as err:
-                msg = (f"Could not populate columns {TableRow.__dict__['_fields']} "
-                       f"from line '{line}'")
+                msg = (
+                    f"Could not populate columns {TableRow.__dict__['_fields']} "
+                    f"from line '{line}'"
+                )
                 raise TypeError(msg) from err
             table_rows = table_rows | {row}
 
