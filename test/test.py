@@ -1,3 +1,5 @@
+"""Unit tests for NamedTupleTable"""
+
 from pathlib import Path
 from typing import NamedTuple
 
@@ -7,6 +9,8 @@ from namedtuple_table import NamedTupleTable
 
 
 class CatRow(NamedTuple):
+    """Row format for __init__ sample data"""
+
     name: str
     ref: int
     age: int
@@ -15,6 +19,7 @@ class CatRow(NamedTuple):
 
 @pytest.fixture
 def cat_rows() -> list[CatRow]:
+    """Sample data for __init__"""
     return [
         CatRow("Freddy", 25, 3, floof=True),
         CatRow("Bucket", 2, 5, floof=True),
@@ -24,15 +29,18 @@ def cat_rows() -> list[CatRow]:
 
 @pytest.fixture
 def dogs_tsv() -> Path:
+    """Good TSV file with good dogs"""
     return Path(__file__).parent / "data/dogs.tsv"
 
 
 @pytest.fixture
 def bad_dogs_tsv() -> Path:
+    """TSV file with missing columns"""
     return Path(__file__).parent / "data/bad_dogs.tsv"
 
 
 def test_methods(cat_rows):
+    """Check basic features of NamedTupleTable"""
     cat_table = NamedTupleTable(cat_rows, index="name")
 
     assert len(cat_table) == 3
@@ -54,6 +62,7 @@ def test_methods(cat_rows):
 
 
 def test_index_change(cat_rows):
+    """Creating a new table with different index"""
     cat_table = NamedTupleTable(cat_rows, index="name")
 
     cats_by_ref = cat_table.with_index("ref")
@@ -66,6 +75,7 @@ def test_index_change(cat_rows):
 
 
 def test_from_tsv(dogs_tsv):
+    """Load a good TSV file"""
     dog_table = NamedTupleTable.from_tsv(dogs_tsv)
 
     # Test columns are named correctly
@@ -82,5 +92,6 @@ def test_from_tsv(dogs_tsv):
 
 
 def test_from_bad_tsv(bad_dogs_tsv):
+    """Load TSV with empty columns"""
     with pytest.raises(TypeError, match="3	Bandit			40"):
-        bad_dog_table = NamedTupleTable.from_tsv(bad_dogs_tsv)
+        NamedTupleTable.from_tsv(bad_dogs_tsv)

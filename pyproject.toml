@@ -75,13 +75,20 @@ select = [
        "N",       # pep8-naming
        "PERF",    # Perflint
        "F401",    # unused-import
-       "E",
-       "W",
-       "F",
+       "E",       # pycodestyle error
+       "W",       # pycodestyle warning
+       "F",       # pyflakes
+       "DOC",     # pydoclint
+       "D",       # pydocstyle
 ]
 
 ignore = [
        "COM812",
+       "D400",  # I don't like punctuation at the end of short fragments
+       "D107",  # Don't need docstring in class _and_ init, prefer class
+       "D203",  # Line before class docstring (inconsistent with D211)
+       "D213",  # D212 and D213 are incompatible
+       "D415",  # ""
 ]
 
 [tool.ruff.lint.per-file-ignores]

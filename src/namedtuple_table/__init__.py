@@ -1,3 +1,5 @@
+"""Simple indexable tables based on NamedTuple"""
+
 from __future__ import annotations
 
 from collections import namedtuple
@@ -17,7 +19,13 @@ NT = TypeVar("NT", bound=NamedTuple)
 
 
 class NamedTupleTable(Mapping[str | int, NT]):
-    """An immutable collection of NamedTuple using one attribute as an index"""
+    """An immutable collection of NamedTuple using one attribute as an index
+
+    Args:
+        rows:  Input data as a consistent set of NamedTuple
+        index: Name of index column. This must be a field in the NamedTuple class
+
+    """
 
     def __init__(self, rows: Iterable[NT], index: str | None = None) -> None:
         if index is None:
@@ -34,6 +42,7 @@ class NamedTupleTable(Mapping[str | int, NT]):
         self._index: str = index
 
     def __str__(self) -> str:
+        """Get string representation"""
         return f"NamedTupleTable ({len(self._rows)} items, index = {self._index})"
 
     @cached_property
@@ -41,12 +50,15 @@ class NamedTupleTable(Mapping[str | int, NT]):
         return MappingProxyType({getattr(row, self._index): row for row in self._rows})
 
     def __getitem__(self, key: int | str) -> NT:
+        """Get item at key in index column"""
         return self._map[key]
 
     def __hash__(self) -> int:
+        """Get hash of table index and data"""
         return hash((self._index, self._rows))
 
     def __iter__(self) -> Iterator[str | int]:
+        """Get iterator over keys in index column"""
         return iter(self._map)
 
     @cached_property
@@ -54,9 +66,30 @@ class NamedTupleTable(Mapping[str | int, NT]):
         return len(self._map)
 
     def __len__(self) -> int:
+        """Get number of rows in table"""
         return self._len
 
     def with_index(self, index: str | None) -> NamedTupleTable:
+        """Get a new table using a different index column
+
+        Note that the underlying NamedTuple collection is identical
+
+        e.g. from TSV data::
+
+          name  ref  colour
+          Bob   1    blue
+          Rob   2    red
+
+        >> table["Bob"]
+        blue
+
+        >> table.with_index("ref")["2"]
+        red
+
+        Args:
+            index:  Indexed column of new table
+
+        """
         return _create_with_new_index(type(self), self._rows, index)
 
     @classmethod
@@ -93,7 +126,8 @@ class NamedTupleTable(Mapping[str | int, NT]):
             try:
                 row = TableRow(*re_split(r"\t+", line))
             except TypeError as err:
-                msg = f"Could not populate columns {TableRow.__dict__['_fields']} from line '{line}'"
+                msg = (f"Could not populate columns {TableRow.__dict__['_fields']} "
+                       f"from line '{line}'")
                 raise TypeError(msg) from err
             table_rows = table_rows | {row}
 
