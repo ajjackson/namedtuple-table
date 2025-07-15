@@ -27,6 +27,11 @@ def dogs_tsv() -> Path:
     return Path(__file__).parent / "data/dogs.tsv"
 
 
+@pytest.fixture
+def bad_dogs_tsv() -> Path:
+    return Path(__file__).parent / "data/bad_dogs.tsv"
+
+
 def test_methods(cat_rows):
     cat_table = NamedTupleTable(cat_rows, index="name")
 
@@ -74,3 +79,8 @@ def test_from_tsv(dogs_tsv):
     # Test duplicate values are detected when re-indexing
     with pytest.raises(ValueError, match="Cannot use 'collar' as index: "):
         dog_table.with_index("collar")
+
+
+def test_from_bad_tsv(bad_dogs_tsv):
+    with pytest.raises(TypeError, match="3	Bandit			40"):
+        bad_dog_table = NamedTupleTable.from_tsv(bad_dogs_tsv)

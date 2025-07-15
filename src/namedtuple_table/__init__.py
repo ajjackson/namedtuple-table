@@ -4,10 +4,14 @@ from collections import namedtuple
 from collections.abc import Mapping
 from functools import cached_property, lru_cache
 from itertools import tee
-from pathlib import PurePath
 from re import split as re_split
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Iterable, Iterator, NamedTuple, Self, TypeVar
+from typing import TYPE_CHECKING, Iterable, Iterator, NamedTuple, TypeVar
+
+if TYPE_CHECKING:
+    from io import TextIOBase
+    from pathlib import Path
+
 
 NT = TypeVar("NT", bound=NamedTuple)
 
@@ -56,7 +60,7 @@ class NamedTupleTable(Mapping[str | int, NT]):
         return _create_with_new_index(type(self), self._rows, index)
 
     @classmethod
-    def from_tsv(cls, path: PurePath, index: str | None = None) -> Self:
+    def from_tsv(cls, path: Path, index: str | None = None) -> NamedTupleTable:
         """Get a NamedTupleTable from Path to .tsv file
 
         The first row of the tab-separated-variables (TSV) file will be
@@ -78,21 +82,23 @@ class NamedTupleTable(Mapping[str | int, NT]):
 
         """
         with path.open() as fd:
-            header = fd.readline()
-            content = fd.readlines()
+            header, *content = list(_strip_comments(fd))
 
-        field_names = re_split(r"\t+", header.strip())
+        field_names = re_split(r"\t+", header)
 
-        TableRow = namedtuple("TableRow", field_names=field_names)
+        TableRow = namedtuple("TableRow", field_names)  # type: ignore[misc]  # noqa: PYI024
 
-        table_rows = set()
+        table_rows: set[TableRow] = set()
         for line in content:
-            if line.strip()[0] in "#!":
-                continue
-            row = TableRow(*re_split(r"\t+", line.strip()))
+            try:
+                row = TableRow(*re_split(r"\t+", line))
+            except TypeError as err:
+                msg = f"Could not populate columns {TableRow.__dict__['_fields']} from line '{line}'"
+                raise TypeError(msg) from err
             table_rows = table_rows | {row}
 
-        return cls(table_rows, index=index)
+        return NamedTupleTable(table_rows, index=index)
+
 
 NTT = TypeVar("NTT", bound=NamedTupleTable)
 
@@ -106,3 +112,10 @@ def _create_with_new_index(
         msg = f"Cannot use '{index}' as index: not unique for all items"
         raise ValueError(msg)
     return new_table
+
+
+def _strip_comments(fd: TextIOBase) -> Iterator[str]:
+    for line in fd:
+        if (stripped_line := line.strip())[0] in "#!":
+            continue
+        yield stripped_line
