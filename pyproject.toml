@@ -5,10 +5,29 @@ build-backend = "uv_build"
 [project]
 name = "namedtuple_table"
 version = "0.1.0"
+authors = [
+    {name = "Adam Jackson", email = "adam.jackson@stfc.ac.uk"},
+]
+maintainers = [
+    {name = "Adam Jackson", email = "adam.jackson@stfc.ac.uk"},
+]
 description = "Simple indexable tables using NamedTuple"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = []
+keywords = [
+    "Python",
+    "table",
+    "index",
+    "simple",
+    "lightweight",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+]
 
 [project.optional-dependencies]
 test = ["pytest"]
@@ -16,6 +35,10 @@ lint = [
      "mypy",
      "ruff",
 ]
+
+[project.urls]
+Repository = "https://github.com/ajjackson/namedtuple-table"
+
 
 [tool.mypy]
 python_version = "3.12"
