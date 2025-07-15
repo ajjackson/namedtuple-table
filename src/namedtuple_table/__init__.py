@@ -70,6 +70,8 @@ class NamedTupleTable(Mapping[str | int, NT]):
         can be used for visual alignment purposes; they will be merged when
         determining columns. Fields may not be left empty.
 
+        Lines may be "commented out" by starting with the character # or !
+
         Args:
             path: .tsv file to import
             index: Column name used to access table items
@@ -85,6 +87,8 @@ class NamedTupleTable(Mapping[str | int, NT]):
 
         table_rows = set()
         for line in content:
+            if line.strip()[0] in "#!":
+                continue
             row = TableRow(*re_split(r"\t+", line.strip()))
             table_rows = table_rows | {row}
 

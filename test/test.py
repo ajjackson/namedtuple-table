@@ -69,6 +69,8 @@ def test_from_tsv(dogs_tsv):
     # Test double-tabs are joined correctly
     assert dog_table["2"].collar == "blue"
 
+    assert "#3" not in dog_table
+
     # Test duplicate values are detected when re-indexing
     with pytest.raises(ValueError, match="Cannot use 'collar' as index: "):
         dog_table.with_index("collar")
