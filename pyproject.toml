@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "namedtuple_table"
-version = "0.1.0.post1"
+version = "0.1.0.post2"
 authors = [
     {name = "Adam Jackson", email = "adam.jackson@stfc.ac.uk"},
 ]
@@ -12,6 +12,8 @@ maintainers = [
     {name = "Adam Jackson", email = "adam.jackson@stfc.ac.uk"},
 ]
 description = "Simple indexable tables using NamedTuple"
+license = "MIT"
+license-files = "LICENSE"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = []
@@ -25,7 +27,6 @@ keywords = [
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
 ]
 
